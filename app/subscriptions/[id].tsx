@@ -1,15 +1,26 @@
-import { Link, useLocalSearchParams } from "expo-router";
-import React from 'react';
-import { Text, View } from 'react-native';
+import { router, useLocalSearchParams } from "expo-router";
+import { Pressable, Text, View } from "react-native";
 
 const SubscriptionDetails = () => {
-    const {id} =useLocalSearchParams<{id: string}>();
+  const { id } = useLocalSearchParams<{ id: string }>();
+
+  const handleGoBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace("/");
+  };
+
   return (
     <View>
       <Text>Subscription Details : {id}</Text>
-      <Link href="/onboarding">Go Back</Link>
+      <Pressable accessibilityRole="button" onPress={handleGoBack}>
+        <Text>Go Back</Text>
+      </Pressable>
     </View>
-  )
-}
+  );
+};
 
-export default SubscriptionDetails
+export default SubscriptionDetails;

@@ -15,6 +15,8 @@ import {
 import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context';
 import { styled } from 'nativewind';
 
+import { posthog } from '@/lib/posthog';
+
 const SafeAreaView = styled(RNSafeAreaView);
 
 // ─── Brand Block ─────────────────────────────────────────────────────────────
@@ -50,6 +52,7 @@ const SignIn = () => {
     await signIn.finalize({
       navigate: ({ session, decorateUrl }) => {
         if (session?.currentTask) return;
+        posthog?.capture('sign_in_completed');
         const url = decorateUrl('/');
         router.replace(url as Href);
       },

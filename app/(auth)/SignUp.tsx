@@ -15,6 +15,8 @@ import {
 import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context';
 import { styled } from 'nativewind';
 
+import { posthog } from '@/lib/posthog';
+
 const SafeAreaView = styled(RNSafeAreaView);
 
 // ─── Brand Block ─────────────────────────────────────────────────────────────
@@ -105,6 +107,7 @@ const SignUp = () => {
     await signUp.finalize({
       navigate: ({ session, decorateUrl }) => {
         if (session?.currentTask) return;
+        posthog?.capture('account_created');
         const url = decorateUrl('/');
         router.replace(url as Href);
       },
@@ -126,6 +129,7 @@ const SignUp = () => {
 
     // Send OTP to email for verification
     await signUp.verifications.sendEmailCode();
+    posthog?.capture('sign_up_verification_requested');
   };
 
   // Step 2: verify email OTP

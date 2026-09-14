@@ -1,9 +1,13 @@
 import '@/global.css';
-import { ClerkProvider } from '@clerk/expo';
+import { ClerkProvider, useUser } from '@clerk/expo';
 import { tokenCache } from '@clerk/expo/token-cache';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
+import { PostHogErrorBoundary, PostHogProvider } from 'posthog-react-native';
+import { Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+
+import { posthog } from '@/lib/posthog';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -18,6 +22,49 @@ if (!publishableKey) {
 export const unstable_settings = {
   anchor: '(tabs)',
 };
+
+function PostHogIdentity() {
+  const { isLoaded, user } = useUser();
+  const identifiedUserId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+
+    if (!user?.id) {
+      identifiedUserId.current = null;
+      return;
+    }
+
+    if (identifiedUserId.current === user.id) {
+      return;
+    }
+
+    posthog?.identify(user.id, {
+      $set: {
+        ...(user.primaryEmailAddress?.emailAddress && {
+          email: user.primaryEmailAddress.emailAddress,
+        }),
+        ...(user.firstName && { first_name: user.firstName }),
+        ...(user.lastName && { last_name: user.lastName }),
+      },
+    });
+    identifiedUserId.current = user.id;
+  }, [isLoaded, user]);
+
+  return null;
+}
+
+function RootErrorFallback() {
+  return (
+    <View className="flex-1 items-center justify-center bg-white px-6">
+      <Text className="text-center text-base text-slate-900">
+        Something went wrong. Please reopen the app and try again.
+      </Text>
+    </View>
+  );
+}
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -47,9 +94,20 @@ export default function RootLayout() {
     return () => clearTimeout(fallback);
   }, []);
 
+  const content = <Stack screenOptions={{ headerShown: false }} />;
+
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <Stack screenOptions={{ headerShown: false }} />
+      <PostHogIdentity />
+      {posthog ? (
+        <PostHogProvider client={posthog}>
+          <PostHogErrorBoundary fallback={RootErrorFallback}>
+            {content}
+          </PostHogErrorBoundary>
+        </PostHogProvider>
+      ) : (
+        content
+      )}
     </ClerkProvider>
   );
 }

@@ -1,4 +1,5 @@
 import { useUser } from "@clerk/expo";
+import CreateSubscriptionModal from "@/components/CreateSubscriptionModal";
 import ListHeading from "@/components/ListHeading";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
@@ -6,13 +7,16 @@ import { HOME_BALANCE, HOME_SUBSCRIPTIONS, HOME_USER, UPCOMING_SUBSCRIPTIONS } f
 import { icons } from "@/constants/icons";
 import images from "@/constants/images";
 import "@/global.css";
+import { posthog } from "@/lib/posthog";
 import { formatCurrency } from "@/lib/utils";
 import dayjs from "dayjs";
 import { styled } from "nativewind";
+import { useSubscriptions } from "@/context/SubscriptionsContext";
 import { useCallback, useState } from "react";
 import {
   FlatList,
   Image,
+  Pressable,
   Text,
   View,
   type ListRenderItemInfo,
@@ -36,7 +40,7 @@ const renderUpcomingSubscription = ({
   <UpcomingSubscriptionCard data={item} />
 );
 
-const HomeListHeader = () => {
+const HomeListHeader = ({ onAddPress }: { onAddPress: () => void }) => {
   const { user } = useUser();
 
   return (
@@ -47,7 +51,9 @@ const HomeListHeader = () => {
           <Text className="home-user-name">{user?.fullName || "Welcome"}</Text>
         </View>
 
-        <Image source={icons.add} className="home-add-icon" />
+        <Pressable onPress={onAddPress}>
+          <Image source={icons.add} className="home-add-icon" />
+        </Pressable>
       </View>
 
       <View className="home-balance-card">
@@ -82,13 +88,22 @@ const HomeListHeader = () => {
 };
 
 export default function App() {
+  const { subscriptions, addSubscription } = useSubscriptions();
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
 
+  const handleAddSubscription = (newSub: any) => {
+    addSubscription(newSub);
+  };
+
   const toggleSubscription = useCallback((id: string) => {
-    setExpandedSubscriptionId((currentId) =>
-      currentId === id ? null : id,
-    );
-  }, []);
+    const isExpanded = expandedSubscriptionId !== id;
+    posthog?.capture('subscription_details_toggled', {
+      subscription_id: id,
+      is_expanded: isExpanded,
+    });
+    setExpandedSubscriptionId(isExpanded ? id : null);
+  }, [expandedSubscriptionId]);
 
   const renderSubscription = useCallback(
     ({ item }: ListRenderItemInfo<Subscription>) => (
@@ -104,17 +119,22 @@ export default function App() {
   return (
     <SafeAreaView className="flex-1 bg-background p-5">
       <FlatList
-        data={HOME_SUBSCRIPTIONS}
+        data={subscriptions}
         renderItem={renderSubscription}
         keyExtractor={keyExtractor}
         extraData={expandedSubscriptionId}
-        ListHeaderComponent={HomeListHeader}
+        ListHeaderComponent={<HomeListHeader onAddPress={() => setIsModalVisible(true)} />}
         ItemSeparatorComponent={SubscriptionSeparator}
         ListEmptyComponent={
           <Text className="home-empty-state">No subscriptions yet</Text>
         }
         contentContainerStyle={listContentContainerStyle}
         showsVerticalScrollIndicator={false}
+      />
+      <CreateSubscriptionModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        onSubmit={handleAddSubscription}
       />
     </SafeAreaView>
   );

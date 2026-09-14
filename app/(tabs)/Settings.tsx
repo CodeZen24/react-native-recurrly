@@ -6,11 +6,19 @@ import dayjs from 'dayjs';
 
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 
+import { posthog } from '@/lib/posthog';
+
 const SafeAreaView = styled(RNSafeAreaView);
 
 const Settings = () => {
   const { signOut } = useAuth();
   const { user } = useUser();
+
+  const handleSignOut = async () => {
+    await signOut();
+    posthog?.capture('signed_out');
+    posthog?.reset();
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -52,7 +60,7 @@ const Settings = () => {
         
         {/* Sign Out Button */}
         <Pressable 
-          onPress={() => signOut()}
+          onPress={handleSignOut}
           className="bg-accent py-5 rounded-full items-center shadow-sm"
         >
           <Text className="text-primary font-sans-bold text-lg">Sign Out</Text>

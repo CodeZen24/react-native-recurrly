@@ -1,3 +1,4 @@
+import { useUser } from "@clerk/expo";
 import ListHeading from "@/components/ListHeading";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
@@ -35,46 +36,50 @@ const renderUpcomingSubscription = ({
   <UpcomingSubscriptionCard data={item} />
 );
 
-const HomeListHeader = () => (
-  <>
-    <View className="home-header">
-      <View className="home-user">
-        <Image source={images.avatar} className="home-avatar" />
-        <Text className="home-user-name">{HOME_USER.name}</Text>
+const HomeListHeader = () => {
+  const { user } = useUser();
+
+  return (
+    <>
+      <View className="home-header">
+        <View className="home-user">
+          <Image source={{ uri: user?.imageUrl }} className="home-avatar" />
+          <Text className="home-user-name">{user?.fullName || "Welcome"}</Text>
+        </View>
+
+        <Image source={icons.add} className="home-add-icon" />
       </View>
 
-      <Image source={icons.add} className="home-add-icon" />
-    </View>
-
-    <View className="home-balance-card">
-      <Text className="home-balance-label">Balance</Text>
-      <View className="home-balance-row">
-        <Text className="home-balance-amount">
-          {formatCurrency(HOME_BALANCE.amount)}
-        </Text>
-        <Text className="home-balance-date">
-          {dayjs(HOME_BALANCE.nextRenewalDate).format("MMM D, YYYY")}
-        </Text>
+      <View className="home-balance-card">
+        <Text className="home-balance-label">Balance</Text>
+        <View className="home-balance-row">
+          <Text className="home-balance-amount">
+            {formatCurrency(HOME_BALANCE.amount)}
+          </Text>
+          <Text className="home-balance-date">
+            {dayjs(HOME_BALANCE.nextRenewalDate).format("MMM D, YYYY")}
+          </Text>
+        </View>
       </View>
-    </View>
 
-    <View>
-      <ListHeading title="Upcoming" />
-      <FlatList
-        data={UPCOMING_SUBSCRIPTIONS}
-        renderItem={renderUpcomingSubscription}
-        keyExtractor={keyExtractor}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        ListEmptyComponent={
-          <Text className="home-empty-state">No upcoming renewals yet</Text>
-        }
-      />
-    </View>
+      <View>
+        <ListHeading title="Upcoming" />
+        <FlatList
+          data={UPCOMING_SUBSCRIPTIONS}
+          renderItem={renderUpcomingSubscription}
+          keyExtractor={keyExtractor}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          ListEmptyComponent={
+            <Text className="home-empty-state">No upcoming renewals yet</Text>
+          }
+        />
+      </View>
 
-    <ListHeading title="All Subscriptions" />
-  </>
-);
+      <ListHeading title="All Subscriptions" />
+    </>
+  );
+};
 
 export default function App() {
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);

@@ -15,25 +15,25 @@
 
 ---
 
-## 📌 Overview
+## Overview
 
 **Recurrly** is a modern mobile application designed to help users track, organize, and optimize recurring expenses and subscriptions. Built on the **Expo SDK 54** platform with **React Native 0.81 (New Architecture)**, Recurrly provides an intuitive, high-performance interface for viewing ongoing commitments, monitoring renewal deadlines, and managing recurring budgets across devices.
 
 ---
 
-## ✨ Features
+## Features
 
-- 💳 **Centralized Subscription Dashboard**: Monitor active recurring services with clear cost indicators, billing frequencies (Weekly, Monthly, Yearly), and payment categories.
-- ⏱️ **Upcoming Renewals Tracker**: Stay informed about approaching payment dates to avoid unexpected subscription renewals.
-- ➕ **Custom Subscription Creation**: Easily add and organize new subscriptions with custom naming, pricing tiers, payment dates, and color-coded tags.
-- 🔍 **Instant Search & Category Filtering**: Quickly discover subscriptions by keyword or filter by custom categories (Entertainment, AI Tools, Developer Tools, Design, Productivity, Cloud, etc.).
-- 🔐 **Secure Authentication**: Frictionless user sign-up and sign-in powered by **Clerk Expo**, with session persistence backed by **Expo SecureStore**.
-- 📊 **Product Analytics & Telemetry**: Privacy-conscious event capturing and crash-resilient session tracking powered by **PostHog**.
-- 🎨 **Sleek Mobile UI**: Crafted with **NativeWind** (Tailwind CSS v4) and custom **Plus Jakarta Sans** typography for an elegant, fluid experience.
+- **Centralized Subscription Dashboard**: Monitor active recurring services with clear cost indicators, billing frequencies (Weekly, Monthly, Yearly), and payment categories.
+- **Upcoming Renewals Tracker**: Stay informed about approaching payment dates to avoid unexpected subscription renewals.
+- **Custom Subscription Creation**: Easily add and organize new subscriptions with custom naming, pricing tiers, payment dates, and color-coded tags.
+- **Instant Search & Category Filtering**: Quickly discover subscriptions by keyword or filter by custom categories (Entertainment, AI Tools, Developer Tools, Design, Productivity, Cloud, etc.).
+- **Secure Authentication**: Frictionless user sign-up and sign-in powered by **Clerk Expo**, with session persistence backed by **Expo SecureStore**.
+- **Product Analytics & Telemetry**: Privacy-conscious event capturing and crash-resilient session tracking powered by **PostHog**.
+- **Sleek Mobile UI**: Crafted with **NativeWind** (Tailwind CSS v4) and custom **Plus Jakarta Sans** typography for an elegant, fluid experience.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Domain | Technology / Library | Description |
 | :--- | :--- | :--- |
@@ -48,7 +48,7 @@
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 react_native-recurrly/
@@ -77,7 +77,7 @@ react_native-recurrly/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -135,7 +135,7 @@ In your terminal, use the interactive shortcuts:
 
 ---
 
-## 📜 Available Scripts
+## Available Scripts
 
 | Command | Action |
 | :--- | :--- |
@@ -148,7 +148,7 @@ In your terminal, use the interactive shortcuts:
 
 ---
 
-## 🛡️ Security & Privacy
+## Security & Privacy
 
 - **Encrypted Token Cache**: User session tokens are secured in the device's hardware-backed keystore/keychain through `expo-secure-store`.
 - **Environment Isolation**: Secret API keys are segregated using environment configurations and ignored by version control.
@@ -156,6 +156,6 @@ In your terminal, use the interactive shortcuts:
 
 ---
 
-## 📄 License
+## License
 
 This repository is maintained for personal and educational use. All rights reserved.
